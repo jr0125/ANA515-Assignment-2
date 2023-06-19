@@ -1,0 +1,71 @@
+---
+title: "ANA515 Assignment 2"
+author: "Jiaxuan Ren"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=TRUE, echo=TRUE}
+# Global options that apply to every chunk.
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60))
+```
+
+## Description of the data
+
+The [candy-power-ranking](https://github.com/fivethirtyeight/data/tree/master/candy-power-ranking) dataset measures "How often did a fun-sized candy of a given type win its matchups against the rest of the field?" and I hope to use this dataset to answer research question "What Halloween candy people most prefer?". The dataset was saved in a 'csv' file. If it is saved in a flat file, I would like to set a fixed width and delimit each attribute by a comma (,) or the tab character (\\t) to make the data well-formatted and well-look. If it is saved as a binary file, it can be opened based on their file type (e.g., IDEs like Visual Studio, Eclipse, or Xcode are primarily used for programming and can handle binary files, especially for source code files and executables).
+
+## Read Data
+
+```{r read_data, include=TRUE}
+# Load tidyverse library
+library(tidyverse)
+
+# Use read_csv function to read the data "candy-data.csv"
+mydata <- read_csv("candy-data.csv")
+
+# Print out all columns of the data
+glimpse(mydata)
+```
+
+
+## Clean the data
+
+```{r clean_data, include=TRUE}
+# Rename the "competitorname" column as "candy_brand" and assigned the cleaned data into a new object called 'cleaned_data'.
+cleaned_data <- mydata %>% rename("candy_brand" = "competitorname") 
+glimpse(cleaned_data)
+
+# Filter the data to only include top-10 'winpercent' candy and assigned the filtered data into a new object called 'filtered_data'.
+filtered_data <- cleaned_data %>% top_n(10, winpercent) 
+glimpse(filtered_data)
+```
+## Characteristics of the data
+
+This dataframe has `r nrow(mydata)` rows and `r ncol(mydata)` columns. After cleaning and filtering, `r nrow(filtered_data)` rows and `r ncol(filtered_data)` columns are kept for further analysis. The names of the columns and a brief description of each are in the table below:
+
+```{r col_description, include=TRUE, echo=TRUE}
+# This makes a new data.frame called "Column Description" with two columns, 'Columns' and 'Description'
+library(knitr) # import knitr library
+col_summary <- data.frame(Columns=c(colnames(filtered_data)), Description=c("the brand name of candy.", "Does it contain chocolate?", "Is it fruit flavored?", "Is there caramel in the candy?", "Does it contain peanuts, peanut butter or almonds?", "Does it contain nougat?", "Does it contain crisped rice, wafers, or a cookie component?", "Is it a hard candy?", "Is it a candy bar?", "Is it one of many candies in a bag or box?", "The percentile of sugar it falls under within the data set.", "The unit price percentile compared to the rest of the set.", "The overall win percentage according to 269,000 matchups."))
+
+kable(col_summary, caption="Column Description")
+```
+
+## Summary statistics
+
+The statistics were calculated on columns 'sugarpercent', 'pricepercent', and 'winpercent'. There is no missing values for all columns in the dataset.
+
+```{r summary_statistics, include=TRUE, echo=TRUE}
+# Summary statistics on column 'sugarpercent'
+sugar_sum <- summary(filtered_data["sugarpercent"])
+print(sugar_sum)
+
+# Summary statistics on column 'pricepercent'
+price_sum <-summary(filtered_data["pricepercent"])
+print(price_sum)
+
+# Summary statistics on column 'winpercent'
+win_sum <-summary(filtered_data["winpercent"])
+print(win_sum)
+```
+
